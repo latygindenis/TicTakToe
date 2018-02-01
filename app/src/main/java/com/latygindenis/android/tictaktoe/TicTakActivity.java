@@ -228,14 +228,27 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
             {
                 continue;
             }
-            if (bufMap[i]!=2){
-                bufMap[i] += 10;
+            if (i==3){
+                if (bufMap[i]!=2){
+                    bufMap[i] += 20;
+                }
+                if (bufMap[i+1]!=2){
+                    bufMap[i+1]+=20;
+                }
+                if (bufMap[i+2]!=2){
+                    bufMap[i+2]+=20;
+                }
             }
-            if (bufMap[i+1]!=2){
-                bufMap[i+1]+=10;
-            }
-            if (bufMap[i+2]!=2){
-                bufMap[i+2]+=10;
+            else {
+                if (bufMap[i]!=2){
+                    bufMap[i] += 10;
+                }
+                if (bufMap[i+1]!=2){
+                    bufMap[i+1]+=10;
+                }
+                if (bufMap[i+2]!=2){
+                    bufMap[i+2]+=10;
+                }
             }
         }
         for (int i=0; i<3; i++) // по столбцам
@@ -243,18 +256,29 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
             if (bufMap[i] == 1 || bufMap[i+3] == 1 || bufMap [i+6] == 1){
                 continue;
             }
-
-            if (bufMap[i] !=2){
-                bufMap[i] += 10;
+            if (i==1){
+                if (bufMap[i] !=2){
+                    bufMap[i] += 20;
+                }
+                if (bufMap[i+3] !=2){
+                    bufMap[i+3] +=20;
+                }
+                if (bufMap[i+6]!=2){
+                    bufMap[i+6] +=20;
+                }
             }
-            if (bufMap[i+3] !=2){
-                bufMap[i+3] +=10;
-            }
-            if (bufMap[i+6]!=2){
-                bufMap[i+6] +=10;
+            else {
+                if (bufMap[i] !=2){
+                    bufMap[i] += 10;
+                }
+                if (bufMap[i+3] !=2){
+                    bufMap[i+3] +=10;
+                }
+                if (bufMap[i+6]!=2){
+                    bufMap[i+6] +=10;
+                }
             }
         }
-
         if (bufMap[0] != 1 && bufMap[4] !=1 && bufMap [8] !=1){ //Главная диагональ
             if (bufMap[0]!=2){
                 bufMap[0]+=10;
@@ -266,7 +290,6 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
                 bufMap[8]+=10;
             }
         }
-
         if (bufMap[2] != 1 && bufMap[4] !=1 && bufMap [6] !=1){ //Побочная диагональ
             if (bufMap[2]!=2){
                 bufMap[2]+=10;
@@ -278,7 +301,6 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
                 bufMap[6]+=10;
             }
         }
-
         int maxZnach=0, maxX=0;
         for (int i=0; i<9; i++){
             if (bufMap[i]>=maxZnach && bufMap[i]!=1 && bufMap[i]!=2){
