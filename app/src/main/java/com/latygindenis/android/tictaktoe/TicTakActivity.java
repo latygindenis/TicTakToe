@@ -86,78 +86,206 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
         }
        return true;
     }
-    private void checkWin (int x){
+    private int checkWin (int x){ // 0 - нет победы, 1 - победа, 2 - ничья
 
         int row = x-x%3; //номер строки - проверяем только её
         if (mas[row]==mas[row+1] && mas[row]==mas[row+2]){
-            Toast toast = Toast.makeText(getApplicationContext(),firstMove + " 1Win!", Toast.LENGTH_SHORT);
-            toast.show();
             resetGame();
-            return;
+            return 1;
         }
         //поиск совпадений по вертикали
         int column = x%3; //номер столбца - проверяем только его
-        if (mas[column]==mas[column+3])
-            if (mas[column]==mas[column+6]){
-                Toast toast = Toast.makeText(getApplicationContext(),firstMove + " 2Win!", Toast.LENGTH_SHORT);
-                toast.show();
+        if (mas[column]==mas[column+3] && mas[column]==mas[column+6]) {
                 resetGame();
-                return;
+                return 1;
             }
         //мы здесь, значит, первый поиск не положительного результата
         //если значение n находится на одной из граней - возвращаем false
         if (x%2!=0){
                     if (checkNoWin()){
                         resetGame();
+                        return 2;
                     }
-                    return;
+                    return 0;
         }
         //проверяем принадлежит ли к левой диагонали значение
         if (x%4==0){
             //проверяем есть ли совпадения на левой диагонали
-            if (mas[0] == mas[4] &&
-                    mas[0] == mas[8]){
-                Toast toast = Toast.makeText(getApplicationContext(),firstMove + " 3Win!", Toast.LENGTH_SHORT);
-                toast.show();
+            if (mas[0] == mas[4] && mas[0] == mas[8]){
                 resetGame();
+                return 1;
             }
             if (x!=4) {
                 if (checkNoWin()){
                     resetGame();
+                    return 2;
                 }
-                return;
+                return 0;
             }
         }
         if (mas[2] == mas[4] && mas[2] == mas[6])
         {
-            Toast toast = Toast.makeText(getApplicationContext(),firstMove + " 4Win!", Toast.LENGTH_SHORT);
-            toast.show();
             resetGame();
+            return 1;
         }
         if (checkNoWin()){
+            Toast toast = Toast.makeText(getApplicationContext(),"Ничья" , Toast.LENGTH_SHORT);
+            toast.show();
             resetGame();
+            return 2;
         }
+        return 0;
     }
     private void setIcon (ImageView img, int x){
 
-        if (mas[x] <1 && firstMove == false){
+        if (mas[x] <1){
             mas[x] = 1;
             img.setImageResource(R.drawable.mzero);
-            checkWin(x);
-            firstMove = true;
-            //место бота
 
-        }
-        else if (mas[x] <1 && firstMove == true){
-            mas[x] = 2;
-            img.setImageResource(R.drawable.mkrest);
-            checkWin(x);
-            firstMove = false;
-            //место бота
+            if (checkWin(x)==0){
+                int botTurn = fortuneMap();
+                mas[botTurn] = 2;
+                masIcon[botTurn].setImageResource(R.drawable.mkrest);
 
+                if (checkWin(botTurn) == 1){
+                    Toast toast1 = Toast.makeText(getApplicationContext(),"Робот победил!" , Toast.LENGTH_SHORT);
+                    toast1.show();
+                }
+                else if (checkWin(botTurn) == 2){
+                    Toast toast1 = Toast.makeText(getApplicationContext(),"Ничья" , Toast.LENGTH_SHORT);
+                    toast1.show();
+                }
+            }
+            else if (checkWin(x)==1){
+                Toast toast2 = Toast.makeText(getApplicationContext(),"Вы выиграли!" , Toast.LENGTH_SHORT);
+                toast2.show();
+            }
+            else {
+                Toast toast2 = Toast.makeText(getApplicationContext(),"Ничья" , Toast.LENGTH_SHORT);
+                toast2.show();
+            }
 
         }
     }
 
+    private int fortuneMap (){
+        int [] bufMap = mas.clone();
 
+    //Предупреждение ситуаций вида "oo_" "o_o"  "_oo"
+
+        for (int i=0; i<9; i+=3) // по строкам
+        {
+            if (bufMap[i] == 1 && bufMap[i+1] == 1 && bufMap[i+2] == 0){
+                return i+2;
+            }
+            if (bufMap[i] ==1 && bufMap[i+1]==0 && bufMap[i+2]==1){
+                return i+1;
+            }
+            if (bufMap[i] == 0 && bufMap[i+1]==1 && bufMap[i+2] == 1){
+                return i;
+            }
+        }
+
+        for (int i=0; i<3; i++) // по столбцам
+        {
+            if (bufMap[i] == 1 && bufMap[i+3] == 1 && bufMap[i+6] == 0){
+                return i+6;
+            }
+            if (bufMap[i] ==1 && bufMap[i+3]==0 && bufMap[i+6]==1){
+                return i+3;
+            }
+            if (bufMap[i] == 0 && bufMap[i+3]==1 && bufMap[i+6] == 1){
+                return i;
+            }
+        }
+
+        if (bufMap[0] == 1 && bufMap[4] == 1 && bufMap[8] == 0){//Главная диагональ
+            return 8;
+        }
+        if (bufMap[0] ==1 && bufMap[4]==0 && bufMap[8]==1){
+            return 4;
+        }
+        if (bufMap[0] == 0 && bufMap[4]==1 && bufMap[8] == 1){
+            return 0;
+        }
+
+
+        if (bufMap[2] == 1 && bufMap[4] == 1 && bufMap[6] == 0){//Побочная диагональ
+            return 6;
+        }
+        if (bufMap[2] ==1 && bufMap[4]==0 && bufMap[6]==1){
+            return 4;
+        }
+        if (bufMap[2] == 0 && bufMap[4]==1 && bufMap[6] == 1){
+            return 2;
+        }
+
+        //Построение "карты" путых клеток с коэффициентами (Клетка с самым высоким коэффициентом выбирается ботом
+
+        for (int i=0; i<9; i+=3) // по строкам
+        {
+            if (bufMap[i] == 1 || bufMap[i+1] == 1 || bufMap [i+2] == 1) //Если есть хоть один враг
+            {
+                continue;
+            }
+            if (bufMap[i]!=2){
+                bufMap[i] += 10;
+            }
+            if (bufMap[i+1]!=2){
+                bufMap[i+1]+=10;
+            }
+            if (bufMap[i+2]!=2){
+                bufMap[i+2]+=10;
+            }
+        }
+        for (int i=0; i<3; i++) // по столбцам
+        {
+            if (bufMap[i] == 1 || bufMap[i+3] == 1 || bufMap [i+6] == 1){
+                continue;
+            }
+
+            if (bufMap[i] !=2){
+                bufMap[i] += 10;
+            }
+            if (bufMap[i+3] !=2){
+                bufMap[i+3] +=10;
+            }
+            if (bufMap[i+6]!=2){
+                bufMap[i+6] +=10;
+            }
+        }
+
+        if (bufMap[0] != 1 && bufMap[4] !=1 && bufMap [8] !=1){ //Главная диагональ
+            if (bufMap[0]!=2){
+                bufMap[0]+=10;
+            }
+            if (bufMap[4]!=2){
+                bufMap[4]+=10;
+            }
+            if (bufMap[8]!=2){
+                bufMap[8]+=10;
+            }
+        }
+
+        if (bufMap[2] != 1 && bufMap[4] !=1 && bufMap [6] !=1){ //Побочная диагональ
+            if (bufMap[2]!=2){
+                bufMap[2]+=10;
+            }
+            if (bufMap[4]!=2){
+                bufMap[4]+=10;
+            }
+            if (bufMap[6]!=2){
+                bufMap[6]+=10;
+            }
+        }
+
+        int maxZnach=0, maxX=0;
+        for (int i=0; i<9; i++){
+            if (bufMap[i]>=maxZnach && bufMap[i]!=1 && bufMap[i]!=2){
+                maxZnach = bufMap[i];
+                maxX = i;
+            }
+        }
+        return maxX;
+    }
 }
