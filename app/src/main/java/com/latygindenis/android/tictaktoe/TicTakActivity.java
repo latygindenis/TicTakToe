@@ -89,6 +89,11 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
     private int checkWin (int x){ // 0 - нет победы, 1 - победа, 2 - ничья
 
         int row = x-x%3; //номер строки - проверяем только её
+
+        if (checkNoWin()){
+            resetGame();
+            return 2;
+        }
         if (mas[row]==mas[row+1] && mas[row]==mas[row+2]){
             resetGame();
             return 1;
@@ -102,10 +107,6 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
         //мы здесь, значит, первый поиск не положительного результата
         //если значение n находится на одной из граней - возвращаем false
         if (x%2!=0){
-                    if (checkNoWin()){
-                        resetGame();
-                        return 2;
-                    }
                     return 0;
         }
         //проверяем принадлежит ли к левой диагонали значение
@@ -116,10 +117,6 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
                 return 1;
             }
             if (x!=4) {
-                if (checkNoWin()){
-                    resetGame();
-                    return 2;
-                }
                 return 0;
             }
         }
@@ -128,21 +125,16 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
             resetGame();
             return 1;
         }
-        if (checkNoWin()){
-            Toast toast = Toast.makeText(getApplicationContext(),"Ничья" , Toast.LENGTH_SHORT);
-            toast.show();
-            resetGame();
-            return 2;
-        }
         return 0;
     }
     private void setIcon (ImageView img, int x){
 
+
         if (mas[x] <1){
             mas[x] = 1;
             img.setImageResource(R.drawable.mzero);
-
-            if (checkWin(x)==0){
+            int humanWin = checkWin(x);
+            if (humanWin == 0){
                 int botTurn = fortuneMap();
                 mas[botTurn] = 2;
                 masIcon[botTurn].setImageResource(R.drawable.mkrest);
@@ -156,11 +148,11 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
                     toast1.show();
                 }
             }
-            else if (checkWin(x)==1){
+            else if (humanWin==1){
                 Toast toast2 = Toast.makeText(getApplicationContext(),"Вы выиграли!" , Toast.LENGTH_SHORT);
                 toast2.show();
             }
-            else {
+            else if (humanWin==2){
                 Toast toast2 = Toast.makeText(getApplicationContext(),"Ничья" , Toast.LENGTH_SHORT);
                 toast2.show();
             }
