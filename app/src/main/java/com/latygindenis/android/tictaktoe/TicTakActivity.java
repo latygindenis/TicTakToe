@@ -74,8 +74,15 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
             mas[i]=0;
             masIcon[i].setImageResource(R.color.backiconcolor);
         }
-    }
+        if (!firstMove){
+            int botTurn = fortuneMap();
+            mas[botTurn] = 2;
+            masIcon[botTurn].setImageResource(R.drawable.mkrest);
+        }
 
+        firstMove = !firstMove;
+
+    }
     private boolean checkNoWin(){
         for (int i=0; i<9; i++)
         {
@@ -90,24 +97,25 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
 
         int row = x-x%3; //номер строки - проверяем только её
 
-        if (checkNoWin()){
-            resetGame();
-            return 2;
-        }
-        if (mas[row]==mas[row+1] && mas[row]==mas[row+2]){
+
+        if (mas[row]==mas[row+1] && mas[row]==mas[row+2] && mas[row]!=0){
             resetGame();
             return 1;
         }
         //поиск совпадений по вертикали
         int column = x%3; //номер столбца - проверяем только его
-        if (mas[column]==mas[column+3] && mas[column]==mas[column+6]) {
+        if (mas[column]==mas[column+3] && mas[column]==mas[column+6] && mas[column]!=0) {
                 resetGame();
                 return 1;
             }
         //мы здесь, значит, первый поиск не положительного результата
         //если значение n находится на одной из граней - возвращаем false
         if (x%2!=0){
-                    return 0;
+            if (checkNoWin()){
+                resetGame();
+                return 2;
+            }
+            return 0;
         }
         //проверяем принадлежит ли к левой диагонали значение
         if (x%4==0){
@@ -117,6 +125,11 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
                 return 1;
             }
             if (x!=4) {
+                if (checkNoWin()){
+                    resetGame();
+                    return 2;
+                }
+
                 return 0;
             }
         }
@@ -125,10 +138,14 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
             resetGame();
             return 1;
         }
+        if (checkNoWin()){
+            resetGame();
+            return 2;
+        }
+
         return 0;
     }
     private void setIcon (ImageView img, int x){
-
 
         if (mas[x] <1){
             mas[x] = 1;
@@ -138,13 +155,14 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
                 int botTurn = fortuneMap();
                 mas[botTurn] = 2;
                 masIcon[botTurn].setImageResource(R.drawable.mkrest);
+                int botWin = checkWin(botTurn);
 
-                if (checkWin(botTurn) == 1){
+                if (botWin == 1){
                     Toast toast1 = Toast.makeText(getApplicationContext(),"Робот победил!" , Toast.LENGTH_SHORT);
                     toast1.show();
                 }
-                else if (checkWin(botTurn) == 2){
-                    Toast toast1 = Toast.makeText(getApplicationContext(),"Ничья" , Toast.LENGTH_SHORT);
+                else if (botWin == 2){
+                    Toast toast1 = Toast.makeText(getApplicationContext(), "Ничья" , Toast.LENGTH_SHORT);
                     toast1.show();
                 }
             }
@@ -156,7 +174,6 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
                 Toast toast2 = Toast.makeText(getApplicationContext(),"Ничья" , Toast.LENGTH_SHORT);
                 toast2.show();
             }
-
         }
     }
 
