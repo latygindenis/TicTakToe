@@ -24,6 +24,7 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
 
    int resZero = R.drawable.mzero;
    int resKrest = R.drawable.mkrest;
+   int numberHod = 0;
    boolean firstMove = false; //false - человек, true - компьютер
    int []mas = new int[9];
 
@@ -182,8 +183,11 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
 
     //Предупреждение ситуаций вида "oo_" "o_o"  "_oo"
 
-        for (int i=0; i<9; i+=3) // по строкам
-        {
+        if (bufMap[4]==0){
+            return 4;
+        }
+
+        for (int i=0; i<9; i+=3){ // по строкам
             if (bufMap[i] == 1 && bufMap[i+1] == 1 && bufMap[i+2] == 0){
                 return i+2;
             }
@@ -195,8 +199,7 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
             }
         }
 
-        for (int i=0; i<3; i++) // по столбцам
-        {
+        for (int i=0; i<3; i++) { // по столбцам
             if (bufMap[i] == 1 && bufMap[i+3] == 1 && bufMap[i+6] == 0){
                 return i+6;
             }
@@ -211,9 +214,6 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
         if (bufMap[0] == 1 && bufMap[4] == 1 && bufMap[8] == 0){//Главная диагональ
             return 8;
         }
-        if (bufMap[0] ==1 && bufMap[4]==0 && bufMap[8]==1){
-            return 4;
-        }
         if (bufMap[0] == 0 && bufMap[4]==1 && bufMap[8] == 1){
             return 0;
         }
@@ -222,33 +222,37 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
         if (bufMap[2] == 1 && bufMap[4] == 1 && bufMap[6] == 0){//Побочная диагональ
             return 6;
         }
-        if (bufMap[2] ==1 && bufMap[4]==0 && bufMap[6]==1){
-            return 4;
-        }
         if (bufMap[2] == 0 && bufMap[4]==1 && bufMap[6] == 1){
             return 2;
         }
 
+        if (bufMap[0] == 1 && bufMap[1] == 0 && bufMap[2] == 0 && bufMap[5] == 0 && bufMap[8] ==1){
+            return 1;
+        }
+        if (bufMap[2] == 1 && bufMap[1] ==0 && bufMap[0] == 0 && bufMap[3] == 0 && bufMap[6] ==1){
+            return 1;
+        }
+
         //Построение "карты" путых клеток с коэффициентами (Клетка с самым высоким коэффициентом выбирается ботом
 
-        for (int i=0; i<9; i+=3) // по строкам
-        {
+        for (int i=0; i<9; i+=3) { // по строкам
             if (bufMap[i] == 1 || bufMap[i+1] == 1 || bufMap [i+2] == 1) //Если есть хоть один враг
             {
+                if (bufMap[i]  == 0 && bufMap[i+1] ==0 && bufMap[i+2] ==1){
+                    bufMap[i]+=400;
+                    bufMap[i+1]+=400;
+                }
+                if (bufMap[i]  == 0 && bufMap[i+1] ==1 && bufMap[i+2] ==0){
+                    bufMap[i]+=400;
+                    bufMap[i+2]+=400;
+                }
+                if (bufMap[i]  == 1 && bufMap[i+1] ==0 && bufMap[i+2] ==0){
+                    bufMap[i+1]+=400;
+                    bufMap[i+2]+=400;
+                }
                 continue;
             }
-            if (i==3){
-                if (bufMap[i]!=2){
-                    bufMap[i] += 20;
-                }
-                if (bufMap[i+1]!=2){
-                    bufMap[i+1]+=20;
-                }
-                if (bufMap[i+2]!=2){
-                    bufMap[i+2]+=20;
-                }
-            }
-            else {
+
                 if (bufMap[i]!=2){
                     bufMap[i] += 10;
                 }
@@ -258,25 +262,26 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
                 if (bufMap[i+2]!=2){
                     bufMap[i+2]+=10;
                 }
-            }
+
         }
-        for (int i=0; i<3; i++) // по столбцам
-        {
-            if (bufMap[i] == 1 || bufMap[i+3] == 1 || bufMap [i+6] == 1){
+        for (int i=0; i<3; i++)  { // по столбцам
+            if (bufMap[i] == 1 || bufMap[i+3] == 1 || bufMap [i+6] == 1) //Если есть хоть один враг
+            {
+                if ((bufMap[i]  == 0 || bufMap[i]>2) && (bufMap[i+3] ==0 || bufMap[i+3] >2) && (bufMap[i+6] ==1 || bufMap[i+6] >2)){
+                    bufMap[i]+=400;
+                    bufMap[i+3]+=400;
+                }
+                if ((bufMap[i]  == 0 || bufMap[i]>2) && (bufMap[i+3] ==1 || bufMap[i+3] >2) && (bufMap[i+6] ==0 || bufMap[i+6] >2)){
+                    bufMap[i]+=400;
+                    bufMap[i+6]+=400;
+                }
+                if ((bufMap[i]  == 1 || bufMap[i]>2) && (bufMap[i+3] ==0 || bufMap[i+3]>2) && (bufMap[i+6] ==0 || bufMap[i+6]>2)){
+
+                    bufMap[i+3]+=400;
+                    bufMap[i+6]+=400;
+                }
                 continue;
             }
-            if (i==1){
-                if (bufMap[i] !=2){
-                    bufMap[i] += 20;
-                }
-                if (bufMap[i+3] !=2){
-                    bufMap[i+3] +=20;
-                }
-                if (bufMap[i+6]!=2){
-                    bufMap[i+6] +=20;
-                }
-            }
-            else {
                 if (bufMap[i] !=2){
                     bufMap[i] += 10;
                 }
@@ -286,14 +291,22 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
                 if (bufMap[i+6]!=2){
                     bufMap[i+6] +=10;
                 }
-            }
+        }
+        if ((bufMap[0]  == 0 || bufMap[0]>2) && bufMap[4] ==1 && (bufMap[8] ==0 || bufMap[8] >2)){
+            bufMap[0]+=400;
+            bufMap[8]+=400;
+        }
+
+        if ((bufMap[2]  == 0 || bufMap[2]>2) && bufMap[4] ==1  && (bufMap[6] ==0 || bufMap[6] >2)){
+            bufMap[2]+=400;
+            bufMap[6]+=400;
         }
         if (bufMap[0] != 1 && bufMap[4] !=1 && bufMap [8] !=1){ //Главная диагональ
             if (bufMap[0]!=2){
                 bufMap[0]+=10;
             }
             if (bufMap[4]!=2){
-                bufMap[4]+=10;
+                bufMap[4]+=20;
             }
             if (bufMap[8]!=2){
                 bufMap[8]+=10;
@@ -304,7 +317,7 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
                 bufMap[2]+=10;
             }
             if (bufMap[4]!=2){
-                bufMap[4]+=10;
+                bufMap[4]+=20;
             }
             if (bufMap[6]!=2){
                 bufMap[6]+=10;
