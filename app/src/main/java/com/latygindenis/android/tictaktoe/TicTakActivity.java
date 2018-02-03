@@ -21,12 +21,8 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
    ImageView [] masIcon;
 
    Button resetButton;
-
-   int resZero = R.drawable.mzero;
-   int resKrest = R.drawable.mkrest;
-   int numberHod = 0;
    boolean firstMove = false; //false - человек, true - компьютер
-   int []mas = new int[9];
+   int []mas = new int[9]; //Поле игры
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +38,7 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
         icon6 = findViewById(R.id.icon6);
         icon7 = findViewById(R.id.icon7);
         icon8 = findViewById(R.id.icon8);
-        resetButton = (Button)findViewById(R.id.restartbutton);
+        resetButton = findViewById(R.id.restartbutton);
 
         masIcon = new ImageView[]{icon0, icon1, icon2, icon3, icon4, icon5, icon6, icon7, icon8};
 
@@ -69,6 +65,8 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.restartbutton: resetGame(); break;
         }
     }
+
+    /*Перезапуск игры*/
     private void resetGame(){
         for (int i=0; i<9; i++)
         {
@@ -84,9 +82,10 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
         firstMove = !firstMove;
 
     }
+
+    /*Вспомогательная функция проверки на ничью*/
     private boolean checkNoWin(){
-        for (int i=0; i<9; i++)
-        {
+        for (int i=0; i<9; i++) {
             if (mas[i] == 0)
             {
                 return false;
@@ -94,23 +93,19 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
         }
        return true;
     }
+
+    /*Проверка результата игры*/
     private int checkWin (int x){ // 0 - нет победы, 1 - победа, 2 - ничья
-
-        int row = x-x%3; //номер строки - проверяем только её
-
-
+        int row = x-x%3;
         if (mas[row]==mas[row+1] && mas[row]==mas[row+2] && mas[row]!=0){
             resetGame();
             return 1;
         }
-        //поиск совпадений по вертикали
-        int column = x%3; //номер столбца - проверяем только его
+        int column = x%3;
         if (mas[column]==mas[column+3] && mas[column]==mas[column+6] && mas[column]!=0) {
                 resetGame();
                 return 1;
             }
-        //мы здесь, значит, первый поиск не положительного результата
-        //если значение n находится на одной из граней - возвращаем false
         if (x%2!=0){
             if (checkNoWin()){
                 resetGame();
@@ -118,9 +113,7 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
             }
             return 0;
         }
-        //проверяем принадлежит ли к левой диагонали значение
         if (x%4==0){
-            //проверяем есть ли совпадения на левой диагонали
             if (mas[0] == mas[4] && mas[0] == mas[8]){
                 resetGame();
                 return 1;
@@ -130,12 +123,10 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
                     resetGame();
                     return 2;
                 }
-
                 return 0;
             }
         }
-        if (mas[2] == mas[4] && mas[2] == mas[6])
-        {
+        if (mas[2] == mas[4] && mas[2] == mas[6]) {
             resetGame();
             return 1;
         }
@@ -143,10 +134,11 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
             resetGame();
             return 2;
         }
-
         return 0;
     }
-    private void setIcon (ImageView img, int x){
+
+    /*Обработка хода человека и хода бота*/
+    private void setIcon (ImageView img, int x){ //
 
         if (mas[x] <1){
             mas[x] = 1;
@@ -178,15 +170,15 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    /*Выбор оптимального хода для бота*/
     private int fortuneMap (){
         int [] bufMap = mas.clone();
 
-    //Предупреждение ситуаций вида "oo_" "o_o"  "_oo"
-
+    //Если центр свободен занимаем его
         if (bufMap[4]==0){
             return 4;
         }
-
+    //Предупреждение ситуаций вида "oo_" "o_o"  "_oo"
         for (int i=0; i<9; i+=3){ // по строкам
             if (bufMap[i] == 1 && bufMap[i+1] == 1 && bufMap[i+2] == 0){
                 return i+2;
@@ -198,7 +190,6 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
                 return i;
             }
         }
-
         for (int i=0; i<3; i++) { // по столбцам
             if (bufMap[i] == 1 && bufMap[i+3] == 1 && bufMap[i+6] == 0){
                 return i+6;
@@ -210,14 +201,12 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
                 return i;
             }
         }
-
         if (bufMap[0] == 1 && bufMap[4] == 1 && bufMap[8] == 0){//Главная диагональ
             return 8;
         }
         if (bufMap[0] == 0 && bufMap[4]==1 && bufMap[8] == 1){
             return 0;
         }
-
 
         if (bufMap[2] == 1 && bufMap[4] == 1 && bufMap[6] == 0){//Побочная диагональ
             return 6;
@@ -226,6 +215,11 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
             return 2;
         }
 
+    /*Проверка особых случаев
+    * |100|     |1--|
+    * |--0|  и  |0--|
+    * |--1|     |001|
+    */
         if (bufMap[0] == 1 && bufMap[1] == 0 && bufMap[2] == 0 && bufMap[5] == 0 && bufMap[8] ==1){
             return 1;
         }
@@ -233,11 +227,12 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
             return 1;
         }
 
-        //Построение "карты" путых клеток с коэффициентами (Клетка с самым высоким коэффициентом выбирается ботом
+    //Построение "карты" коэффициентов для пустых клеток(Клетка с самым высоким коэффициентом выбирается ботом)
 
         for (int i=0; i<9; i+=3) { // по строкам
             if (bufMap[i] == 1 || bufMap[i+1] == 1 || bufMap [i+2] == 1) //Если есть хоть один враг
             {
+
                 if (bufMap[i]  == 0 && bufMap[i+1] ==0 && bufMap[i+2] ==1){
                     bufMap[i]+=400;
                     bufMap[i+1]+=400;
