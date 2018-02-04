@@ -178,7 +178,45 @@ public class TicTakActivity extends AppCompatActivity implements View.OnClickLis
         if (bufMap[4]==0){
             return 4;
         }
-    //Предупреждение ситуаций вида "oo_" "o_o"  "_oo"
+        //Предупреждение ситуаций вида "xx_" "x_x"  "_xx"
+        for (int i=0; i<9; i+=3){ // по строкам
+            if (bufMap[i] == 2 && bufMap[i+1] == 2 && bufMap[i+2] == 0){
+                return i+2;
+            }
+            if (bufMap[i] ==2 && bufMap[i+1]==0 && bufMap[i+2]==2){
+                return i+1;
+            }
+            if (bufMap[i] == 0 && bufMap[i+1]==2 && bufMap[i+2] == 2){
+                return i;
+            }
+        }
+        for (int i=0; i<3; i++) { // по столбцам
+            if (bufMap[i] == 2 && bufMap[i+3] == 2 && bufMap[i+6] == 0){
+                return i+6;
+            }
+            if (bufMap[i] ==2 && bufMap[i+3]==0 && bufMap[i+6]==2){
+                return i+3;
+            }
+            if (bufMap[i] == 0 && bufMap[i+3]==2 && bufMap[i+6] == 2){
+                return i;
+            }
+        }
+        if (bufMap[0] == 2 && bufMap[4] == 2 && bufMap[8] == 0){//Главная диагональ
+            return 8;
+        }
+        if (bufMap[0] == 0 && bufMap[4]==2 && bufMap[8] == 2){
+            return 0;
+        }
+
+        if (bufMap[2] == 2 && bufMap[4] == 2 && bufMap[6] == 0){//Побочная диагональ
+            return 6;
+        }
+        if (bufMap[2] == 0 && bufMap[4]==2 && bufMap[6] == 2){
+            return 2;
+        }
+
+
+        //Предупреждение ситуаций вида "oo_" "o_o"  "_oo"
         for (int i=0; i<9; i+=3){ // по строкам
             if (bufMap[i] == 1 && bufMap[i+1] == 1 && bufMap[i+2] == 0){
                 return i+2;
